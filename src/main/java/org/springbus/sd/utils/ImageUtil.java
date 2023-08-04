@@ -1,6 +1,7 @@
 package org.springbus.sd.utils;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -44,6 +45,38 @@ public class ImageUtil {
             ImageIO.write(bufferedImage, suffix, imageFile);
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (bais != null) {
+                    bais.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static BufferedImage reSize(BufferedImage img, int newW, int newH) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        BufferedImage dmg = new BufferedImage(newW, newH, img.getType());
+        Graphics2D g = dmg.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g.drawImage(img, 0, 0, newW, newH, 0, 0, w, h, null);
+        g.dispose();
+        return dmg;
+    }
+
+    public static BufferedImage base64ToImg(String base64String) {
+        ByteArrayInputStream bais = null;
+        try {
+            byte[] bytes = Base64.getDecoder().decode(base64String);
+            bais = new ByteArrayInputStream(bytes);
+            BufferedImage bufferedImage = ImageIO.read(bais);
+            return bufferedImage;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         } finally {
             try {
                 if (bais != null) {
